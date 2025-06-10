@@ -13,7 +13,7 @@
               <a class="nav-link active" href="#">首页</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">分类</a>
+              <a class="nav-link" href="/types">分类</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">促销</a>
@@ -21,11 +21,12 @@
           </ul>
           <div class="d-flex align-items-center">
             <a href="/login" class="btn btn-outline-success me-2">登录</a>
+            <a href="/signup" class="btn btn-outline-success me-2">注册</a>
             <div class="position-relative">
-              <button class="btn btn-outline-primary" @click="showCart">
+              <a class="btn btn-outline-primary" href="/cart">
                 购物车
-                <span class="badge bg-danger cart-badge" v-if="cart.length">{{ cart.length }}</span>
-              </button>
+<!--                <span class="badge bg-danger cart-badge" v-if="cart.length">{{ cart.length }}</span>-->
+              </a>
             </div>
           </div>
         </div>
@@ -37,13 +38,13 @@
       <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <img src="https://via.placeholder.com/1200x400?text=促销活动1" class="d-block w-100" alt="促销1">
+            <img src="http://106.54.241.217:8080/images/2025/06/10/VCG211376854868.jpg" class="d-block w-100" alt="促销1">
           </div>
           <div class="carousel-item">
-            <img src="https://via.placeholder.com/1200x400?text=促销活动2" class="d-block w-100" alt="促销2">
+            <img src="http://106.54.241.217:8080/images/2025/06/10/VCG211354915574.jpg" class="d-block w-100" alt="促销2">
           </div>
           <div class="carousel-item">
-            <img src="https://via.placeholder.com/1200x400?text=促销活动3" class="d-block w-100" alt="促销3">
+            <img src="http://106.54.241.217:8080/images/2025/06/10/VCG211467334623.jpg" class="d-block w-100" alt="促销3">
           </div>
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
@@ -117,6 +118,7 @@
           <div class="col-md-4 mb-3">
             <h5>联系方式</h5>
             <p>邮箱: support@onlineshop.com<br>电话: 400-123-4567</p>
+            <a href="/faq" class="text-dark">有问题？点我！</a>
           </div>
           <div class="col-md-4 mb-3">
             <h5>关注我们</h5>
@@ -138,8 +140,8 @@ export default {
   data() {
     return {
       products: [
-        { id: 1, name: '新鲜苹果', price: 5.99, image: 'https://via.placeholder.com/150' },
-        { id: 2, name: '有机牛奶', price: 12.99, image: 'https://via.placeholder.com/150' },
+        { id: 1, name: '加厚垃圾袋', price: 5.99, image: 'http://106.54.241.217:8080/images/2025/06/10/efae3841782a3d4ff86f109b85a9f280.png' },
+        { id: 2, name: '大魔王素毛肚', price: 12.99, image: 'http://106.54.241.217:8080/images/2025/06/10/0b92a58f20517d177e3abeae6f5aaf11.png' },
         { id: 3, name: '全麦面包', price: 8.50, image: 'https://via.placeholder.com/150' },
         { id: 4, name: '优质牛肉', price: 29.99, image: 'https://via.placeholder.com/150' },
       ],
