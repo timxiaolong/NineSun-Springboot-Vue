@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.springboot.mapper.CategoriesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.springboot.entity.Categories">
+        <id column="category_id" property="categoryId" />
+        <result column="name" property="name" />
+        <result column="parent_id" property="parentId" />
+        <result column="slug" property="slug" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        category_id, name, parent_id, slug
+    </sql>
+
+</mapper>
