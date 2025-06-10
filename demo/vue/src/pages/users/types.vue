@@ -10,17 +10,18 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <a class="nav-link" href="#">首页</a>
+              <a class="nav-link" href="/">首页</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="#">分类</a>
+              <a class="nav-link active" href="/types">分类</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">促销</a>
             </li>
           </ul>
           <div class="d-flex align-items-center">
-            <a href="#login" class="btn btn-outline-success me-2">登录</a>
+            <a href="/login" class="btn btn-outline-success me-2">登录</a>
+            <a href="/signup" class="btn btn-outline-success me-2">注册</a>
             <div class="position-relative">
               <button class="btn btn-outline-primary" @click="goToCart">
                 购物车
@@ -119,11 +120,13 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'Category',
   data() {
     return {
-      categories: ['水果', '饮料', '零食', '日用品'],
+      categories: ['休闲食品', '家清日化','米面粮油'],
       selectedCategory: '全部',
       searchQuery: '',
       products: [
@@ -173,6 +176,12 @@ export default {
   mounted() {
     // 初始化时显示所有商品
     this.filteredProducts = [...this.products];
+    axios({
+      method:'GET',
+      url:'http://localhost:8080/users/getproducts',
+    }).then(result=>{
+      this.filteredProducts = result.data
+    })
   }
 };
 </script>

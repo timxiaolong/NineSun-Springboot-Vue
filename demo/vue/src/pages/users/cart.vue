@@ -3,17 +3,17 @@
     <!-- 顶栏（与首页一致） -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
       <div class="container">
-        <a class="navbar-brand" href="#">网上超市</a>
+        <a class="navbar-brand" href="/">网上超市</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <a class="nav-link" href="#">首页</a>
+              <a class="nav-link" href="/">首页</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">分类</a>
+              <a class="nav-link" href="/types">分类</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">促销</a>
@@ -21,12 +21,7 @@
           </ul>
           <div class="d-flex align-items-center">
             <a href="#login" class="btn btn-outline-success me-2">登录</a>
-            <div class="position-relative">
-              <button class="btn btn-outline-primary" disabled>
-                购物车
-                <span class="badge bg-danger cart-badge" v-if="cart.length">{{ cart.length }}</span>
-              </button>
-            </div>
+
           </div>
         </div>
       </div>

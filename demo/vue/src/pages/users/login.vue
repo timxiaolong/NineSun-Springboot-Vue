@@ -1,4 +1,35 @@
 <template>
+  <!-- 顶栏（与首页一致） -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">网上超市</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">首页</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">分类</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">促销</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center">
+          <a href="#login" class="btn btn-outline-success me-2">登录</a>
+          <div class="position-relative">
+            <button class="btn btn-outline-primary" @click="goToCart">
+              购物车
+              <span class="badge bg-danger cart-badge" v-if="cartCount">{{ cartCount }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
   <div class="container d-flex justify-content-center align-items-center min-vh-100 background">
     <div class="card p-4 shadow" style="max-width: 400px; width: 100%;">
       <h2 class="text-center mb-4">登录</h2>
@@ -58,6 +89,29 @@
       </div>
     </div>
   </div>
+  <!-- 底部（与首页一致） -->
+  <footer class="text-center">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <h5>关于我们</h5>
+          <p>网上超市致力于为您提供新鲜、优质的商品和便捷的购物体验。</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h5>联系方式</h5>
+          <p>邮箱: support@onlineshop.com<br>电话: 400-123-4567</p>
+        </div>
+        <div class="col-md-4 mb-3">
+          <h5>关注我们</h5>
+          <p>
+            <a href="#" class="text-dark me-2">微博</a>
+            <a href="#" class="text-dark">微信</a>
+          </p>
+        </div>
+      </div>
+      <p class="mt-3">© 2025 网上超市 版权所有</p>
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -111,7 +165,7 @@ export default {
 
 <style scoped>
 .background {
-  background-image: url('https://img.alicdn.com/imgextra/i3/O1CN01Sf6dER1zbJ3uVQ0lE_!!6000000006732-0-tps-846-472.jpg');
+  background-image: url('');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
