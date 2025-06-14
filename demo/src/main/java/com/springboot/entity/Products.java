@@ -37,7 +37,7 @@ public class Products implements Serializable {
 
     private Integer categoryId;
 
-    private Boolean isActive;
+    private String picUrl;
 
 
 }

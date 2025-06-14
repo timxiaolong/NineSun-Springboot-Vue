@@ -9,10 +9,10 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link" href="#">首页</a>
+            <a class="nav-link" href="/">首页</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">分类</a>
+            <a class="nav-link" href="/types">分类</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#">促销</a>
@@ -145,15 +145,35 @@ export default {
           console.log(result)
           if (result.data.status === 200){
             localStorage.setItem('username',result.data.param.username)
-            localStorage.setItem('adminId',result.data.param.id)
+            localStorage.setItem('userId',result.data.param.userId)
+            console.log(sessionStorage.getItem('userId'))
             alert(result.data.message)
-            setTimeout("location.href=\"/\"",3000)
+            // setTimeout("location.href=\"/\"",3000)
           }else {
             alert(result.data.message)
           }
         })
       } else {
-        alert(`管理员 ${this.username} 登录成功！`);
+        axios({
+          url:'http://localhost:8080/admins/login',
+          method:'GET',
+          params:{
+            username:this.username,
+            password:this.password
+          }
+        }).then(result=>{
+          console.log(result)
+          if (result.data.status === 200){
+            console.log(result.data)
+            window.sessionStorage.setItem('userId',result.data.userId)
+            window.sessionStorage.setItem('userName',result.data.username)
+            alert(result.data.message)
+            // setTimeout("location.href=\"/admin\"",3000)
+          }else {
+            alert(result.data.message)
+          }
+        })
+        // alert(`管理员 ${this.username} 登录成功！`);
       }
       this.errorMessage = '';
       this.username = '';

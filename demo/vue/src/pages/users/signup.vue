@@ -22,10 +22,9 @@
           <div class="d-flex align-items-center">
             <a href="#login" class="btn btn-outline-success me-2">登录</a>
             <div class="position-relative">
-              <button class="btn btn-outline-primary" @click="goToCart">
+              <a class="btn btn-outline-primary" href="/cart">
                 购物车
-                <span class="badge bg-danger cart-badge" v-if="cartCount">{{ cartCount }}</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>

@@ -20,8 +20,14 @@
             </li>
           </ul>
           <div class="d-flex align-items-center">
-            <a href="#login" class="btn btn-outline-success me-2">登录</a>
-
+            <div v-if="this.userId != null" >
+              <span style="margin-right: 5px">欢迎用户：{{this.username}}</span>
+              <a href="/userinfo" class="btn btn-outline-info me-2">个人中心</a>
+            </div>
+            <div v-if="this.userId == null">
+              <a href="/login" class="btn btn-outline-success me-2">登录</a>
+              <a href="/signup" class="btn btn-outline-success me-2">注册</a>
+            </div>
           </div>
         </div>
       </div>
@@ -51,10 +57,10 @@
               <tbody>
               <tr v-for="item in cart" :key="item.id">
                 <td>
-                  <img :src="item.image" alt="商品图片" style="width: 50px; height: 50px; object-fit: cover;">
+                  <img :src="item.picUrl" alt="商品图片" style="width: 50px; height: 50px; object-fit: cover;">
                 </td>
                 <td>{{ item.name }}</td>
-                <td>￥{{ item.price.toFixed(2) }}</td>
+                <td>￥{{ item.price }}</td>
                 <td>
                   <div class="input-group input-group-sm" style="width: 120px;">
                     <button class="btn btn-outline-secondary" @click="decreaseQuantity(item.id)">-</button>
@@ -62,9 +68,9 @@
                     <button class="btn btn-outline-secondary" @click="increaseQuantity(item.id)">+</button>
                   </div>
                 </td>
-                <td>￥{{ (item.price * item.quantity).toFixed(2) }}</td>
+                <td>￥{{ (item.price * item.quantity) }}</td>
                 <td>
-                  <button class="btn btn-sm btn-danger" @click="removeFromCart(item.id)">移除</button>
+                  <button class="btn btn-sm btn-danger" @click="removeFromCart(item.cartItemId)">移除</button>
                 </td>
               </tr>
               </tbody>
@@ -74,7 +80,7 @@
 
         <!-- 总价和结算 -->
         <div class="d-flex justify-content-end align-items-center">
-          <h4 class="me-3">总计: ￥{{ cartTotal.toFixed(2) }}</h4>
+          <h4 class="me-3">总计: ￥{{ cartTotal }}</h4>
           <button class="btn btn-primary" @click="checkout">结算</button>
         </div>
       </div>
@@ -107,15 +113,16 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'Cart',
   data() {
     return {
       cart: [
-        { id: 1, name: '新鲜苹果', price: 5.99, image: 'https://via.placeholder.com/150', quantity: 2 },
-        { id: 2, name: '有机牛奶', price: 12.99, image: 'https://via.placeholder.com/150', quantity: 1 },
-        { id: 3, name: '全麦面包', price: 8.50, image: 'https://via.placeholder.com/150', quantity: 3 }
-      ]
+       ],
+      username:'',
+      userId:''
     };
   },
   computed: {
@@ -137,12 +144,37 @@ export default {
       }
     },
     removeFromCart(id) {
-      this.cart = this.cart.filter(item => item.id !== id);
+      axios({
+        method:'DELETE',
+        url:'http://localhost:8080/cart-items/deleteCart',
+        params:{
+          Id:parseInt(id)
+        }
+      }).then(result=>{
+        alert(result.data.message)
+        if (result.data.status === 200){
+          location.reload()
+        }
+      })
     },
     checkout() {
       alert(`感谢购买！总计: ￥${this.cartTotal.toFixed(2)}`);
       this.cart = [];
     }
+  },
+  mounted() {
+    this.username=localStorage.getItem('username')
+    this.userId=localStorage.getItem('userId')
+    axios({
+      method:'GET',
+      url:'http://localhost:8080/cart-items/getcart',
+      params:{
+        userId:parseInt(localStorage.getItem('userId'))
+      }
+    }).then(result=>{
+      this.cart=result.data
+      console.log(this.cart)
+    })
   }
 };
 </script>

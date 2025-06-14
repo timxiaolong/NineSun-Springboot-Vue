@@ -20,12 +20,16 @@
             </li>
           </ul>
           <div class="d-flex align-items-center">
-            <a href="#login" class="btn btn-outline-success me-2">登录</a>
-            <div class="position-relative">
-              <button class="btn btn-outline-primary" @click="goToCart">
+            <div v-if="this.userId != null" >
+              <span style="margin-right: 5px">欢迎用户：{{this.username}}</span>
+              <a href="/userinfo" class="btn btn-outline-info me-2">个人中心</a>
+              <a class="btn btn-outline-primary" href="/cart">
                 购物车
-                <span class="badge bg-danger cart-badge" v-if="cartCount">{{ cartCount }}</span>
-              </button>
+              </a>
+            </div>
+            <div v-if="this.userId == null">
+              <a href="/login" class="btn btn-outline-success me-2">登录</a>
+              <a href="/signup" class="btn btn-outline-success me-2">注册</a>
             </div>
           </div>
         </div>
@@ -37,14 +41,13 @@
       <div class="row">
         <!-- 商品大图 -->
         <div class="col-md-6">
-          <img :src="product.image" alt="商品图片" class="img-fluid rounded" style="max-height: 400px; object-fit: cover;">
+          <img :src="this.product.picUrl" alt="商品图片" class="img-fluid rounded" style="max-height: 400px; object-fit: cover;">
         </div>
         <!-- 商品信息 -->
         <div class="col-md-6">
-          <h2>{{ product.name }}</h2>
-          <p class="text-muted">分类: {{ product.category }}</p>
-          <h3 class="text-primary">￥{{ product.price.toFixed(2) }}</h3>
-          <p><strong>库存:</strong> {{ product.stock }} 件</p>
+          <h2>{{ this.product.name }}</h2>
+          <h3 class="text-primary">￥{{ product.price}}</h3>
+          <p><strong>库存:</strong> {{ product.stockQuantity }} 件</p>
           <div class="input-group mb-3" style="width: 150px;">
             <button class="btn btn-outline-secondary" @click="decreaseQuantity">-</button>
             <input type="text" class="form-control text-center" v-model.number="quantity" readonly>
@@ -67,14 +70,14 @@
       <!-- 用户评价 -->
       <div class="mt-5">
         <h4>用户评价</h4>
-        <div class="mb-3">
-          <span>平均评分: </span>
-          <span v-for="n in 5" :key="n" class="text-warning">
-            <i class="bi bi-star-fill" v-if="n <= product.rating"></i>
-            <i class="bi bi-star" v-else></i>
-          </span>
-          <span class="ms-2">({{ product.rating.toFixed(1) }})</span>
-        </div>
+<!--        <div class="mb-3">-->
+<!--          <span>平均评分: </span>-->
+<!--          <span v-for="n in 5" :key="n" class="text-warning">-->
+<!--            <i class="bi bi-star-fill" v-if="n <= product.rating"></i>-->
+<!--            <i class="bi bi-star" v-else></i>-->
+<!--          </span>-->
+<!--          <span class="ms-2">({{ product.rating.toFixed(1) }})</span>-->
+<!--        </div>-->
         <div class="card">
           <div class="card-body">
             <div v-for="review in reviews" :key="review.id" class="border-bottom pb-3 mb-3">
@@ -127,23 +130,27 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'ProductDetail',
   data() {
     return {
       product: {
-        id: 1,
-        name: '新鲜苹果',
-        category: '水果',
-        price: 5.99,
-        stock: 100,
-        image: 'https://via.placeholder.com/600x400?text=新鲜苹果',
-        description: '新鲜采摘的优质苹果，口感脆甜，富含维生素，适合全家食用。产地：山东烟台。',
-        rating: 4.5
+        productId:0,
+        name:'',
+        description:'',
+        price:0,
+        stockQuantity:0,
+        categoryId:0,
+        picUrl:'',
+        rating:2
       },
       quantity: 1,
       cartCount: 3, // 模拟购物车数量
       addMessage: '',
+      username:'',
+      userId:0,
       reviews: [
         { id: 1, user: '用户A', rating: 5, comment: '非常新鲜，口感很好！', date: '2025-06-01' },
         { id: 2, user: '用户B', rating: 4, comment: '味道不错，但包装可以改进。', date: '2025-05-28' }
@@ -171,6 +178,22 @@ export default {
       alert('跳转到购物车页面');
       // 实际应用中可使用路由跳转
     }
+  },
+  mounted() {
+    this.username=localStorage.getItem('username')
+    this.userId=localStorage.getItem('userId')
+    console.log(parseInt(this.$route.query.productId))
+    axios({
+      method:'GET',
+      url:'http://localhost:8080/products/getSingleProducts',
+      params:{
+        productId:parseInt(this.$route.query.productId)
+      }
+    }).then(result=>{
+      console.log(result.data)
+      this.product = result.data
+      console.log(this.product)
+    })
   }
 };
 </script>

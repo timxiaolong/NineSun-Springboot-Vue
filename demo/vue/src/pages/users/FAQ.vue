@@ -20,12 +20,16 @@
             </li>
           </ul>
           <div class="d-flex align-items-center">
-            <a href="#login" class="btn btn-outline-success me-2">登录</a>
-            <div class="position-relative">
-              <button class="btn btn-outline-primary" @click="goToCart">
+            <div v-if="this.userId != null" >
+              <span style="margin-right: 5px">欢迎用户：{{this.username}}</span>
+              <a href="/userinfo" class="btn btn-outline-info me-2">个人中心</a>
+              <a class="btn btn-outline-primary" href="/cart">
                 购物车
-                <span class="badge bg-danger cart-badge" v-if="cartCount">{{ cartCount }}</span>
-              </button>
+              </a>
+            </div>
+            <div v-if="this.userId == null">
+              <a href="/login" class="btn btn-outline-success me-2">登录</a>
+              <a href="/signup" class="btn btn-outline-success me-2">注册</a>
             </div>
           </div>
         </div>
