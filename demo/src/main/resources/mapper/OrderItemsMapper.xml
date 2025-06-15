@@ -4,16 +4,16 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.springboot.entity.OrderItems">
-        <id column="order_item_id" property="orderItemId" />
-        <result column="order_id" property="orderId" />
+        <id column="order_items_id" property="orderItemsId" />
         <result column="product_id" property="productId" />
         <result column="quantity" property="quantity" />
-        <result column="unit_price" property="unitPrice" />
+        <result column="amount" property="amount" />
+        <result column="order_id" property="orderId" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        order_item_id, order_id, product_id, quantity, unit_price
+        order_items_id, product_id, quantity, amount, order_id
     </sql>
 
 </mapper>

@@ -15,7 +15,11 @@ export default defineConfig({
       '/api': {
         target: 'http:///localhost:8080/', // 后端服务地址
         changeOrigin: true, // 允许跨域
-        rewrite: (path) => path.replace(/^\/api/, ''), // 重写路径
+        pathRewrite: {
+          // 如果接口中是没有api的，那就直接置空，'^/api': ''，
+          // 如果接口中有api，那就得写成{'^/api':'/api'}
+          '^/api': ''
+        }
       },
     },
   },

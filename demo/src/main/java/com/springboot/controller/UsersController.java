@@ -2,6 +2,8 @@ package com.springboot.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.springboot.entity.CartItems;
 import com.springboot.entity.Message;
 import com.springboot.entity.Products;
@@ -10,6 +12,7 @@ import com.springboot.mapper.ProductsMapper;
 import com.springboot.mapper.UsersMapper;
 import com.springboot.service.ProductsService;
 import com.springboot.service.UsersService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,11 +51,37 @@ public class UsersController {
         }
     }
 
-    @GetMapping("/getproducts")
-    public List<Products> getProducts(){
-        LambdaQueryWrapper<Products> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.select(Products::getProductId,Products::getName,Products::getPrice,Products::getPicUrl,Products::getCategoryId,Products::getStockQuantity);
-        List<Products> products = productsService.list(lambdaQueryWrapper);
-        return products;
+    @GetMapping("/getUserInfo")
+    public Users getUserInfo(@RequestParam Integer id){
+        LambdaQueryWrapper<Users> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Users::getUserId,id);
+        return usersService.getOne(lambdaQueryWrapper);
+    }
+
+    @PostMapping("/changeUserInfo")
+    public Message changeUserInfo(@RequestBody Users users){
+        System.out.println(users);
+        if (usersService.updateById(users)){
+            return new Message("更改成功",200,null);
+        }else  {
+            return new Message("更改失败",400,null);
+        }
+    }
+
+    @PostMapping("/changeUserPassword")
+    public Message changeUserPassword(@RequestParam String oldPassword, @RequestParam String newPassword, @RequestParam Integer userId){
+        LambdaQueryWrapper<Users> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Users::getUserId,userId).eq(Users::getPassword,oldPassword);
+        Users users = usersService.getOne(lambdaQueryWrapper);
+        if (users!=null){
+            users.setPassword(newPassword);
+            if (usersService.updateById(users)){
+                return new Message("修改成功！即将跳转至主页面",200,null);
+            }else {
+                return new Message("修改失败，请检查所填信息",400,null);
+            }
+        }else  {
+            return new Message("修改失败，请检查所填信息",400,null);
+        }
     }
 }

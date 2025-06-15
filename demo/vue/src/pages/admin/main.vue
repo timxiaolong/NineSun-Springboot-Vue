@@ -1,3 +1,4 @@
+
 <template>
   <div class="d-flex flex-column min-vh-100">
     <!-- 顶栏 -->
@@ -95,17 +96,22 @@
               <th>ID</th>
               <th>用户名</th>
               <th>邮箱</th>
-              <th>操作</th>
+              <th>昵称</th>
+              <th>地址</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="user in users" :key="user.id">
-              <td>{{ user.id }}</td>
+            <tr v-for="(user,index) in users" :key="user.id">
+              <td>{{ user.userId }}</td>
               <td>{{ user.username }}</td>
               <td>{{ user.email }}</td>
+              <td>{{ user.fullName }}</td>
+              <td>{{ user.address }}</td>
               <td>
-                <button class="btn btn-sm btn-primary me-2" @click="editUser(user.id)">编辑</button>
-                <button class="btn btn-sm btn-danger" @click="deleteUser(user.id)">删除</button>
+                <button type="button" class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#userProfileModal" @click="setCurrentUserId(index)">
+                  编辑
+                </button>
+                <button class="btn btn-sm btn-danger" @click="deleteUser(user.userId)">删除</button>
               </td>
             </tr>
             </tbody>
@@ -114,11 +120,13 @@
         <!-- 商品列表 -->
         <div v-if="activeSection === 'productList'">
           <h3>商品列表</h3>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productProfileModal">新增商品</button>
           <table class="table table-striped">
             <thead>
             <tr>
               <th>ID</th>
               <th>商品名称</th>
+              <th>描述</th>
               <th>价格</th>
               <th>库存</th>
               <th>操作</th>
@@ -126,13 +134,14 @@
             </thead>
             <tbody>
             <tr v-for="product in products" :key="product.id">
-              <td>{{ product.id }}</td>
+              <td>{{ product.productId }}</td>
               <td>{{ product.name }}</td>
-              <td>￥{{ product.price.toFixed(2) }}</td>
-              <td>{{ product.stock }}</td>
+              <td>{{ product.description }}</td>
+              <td>￥{{ product.price }}</td>
+              <td>{{ product.stockQuantity }}</td>
               <td>
-                <button class="btn btn-sm btn-primary me-2" @click="editProduct(product.id)">编辑</button>
-                <button class="btn btn-sm btn-danger" @click="deleteProduct(product.id)">删除</button>
+                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#productProfileModal" @click="editProduct(product.productId)">编辑</button>
+                <button class="btn btn-sm btn-danger" @click="deleteProduct(product.productId)">删除</button>
               </td>
             </tr>
             </tbody>
@@ -181,24 +190,116 @@
       </div>
     </div>
   </div>
+
+  <!--模态框组件-->
+  <div class="modal fade" id="userProfileModal" tabindex="-1" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userProfileModalLabel">修改个人信息</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+        </div>
+        <div class="modal-body">
+          <form id="userProfileForm">
+            <div class="mb-3">
+              <label for="username" class="form-label">用户名</label>
+              <input type="text" class="form-control" id="username" v-model="this.changeUserInfo.username" placeholder="请输入用户名" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">邮箱</label>
+              <input type="email" class="form-control" id="email" v-model="this.changeUserInfo.email" placeholder="请输入邮箱" required>
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">手机号码</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.changeUserInfo.phone" placeholder="请输入手机号码">
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">昵称</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.changeUserInfo.fullName" placeholder="请输入昵称">
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">收货地址</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.changeUserInfo.address" placeholder="请输入收货地址">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" @click="saveProfile()">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="productProfileModal" tabindex="-1" aria-labelledby="productProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productProfileModalLabel">修改商品信息</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="关闭"></button>
+        </div>
+        <div class="modal-body">
+          <form id="productProfileForm">
+            <div class="mb-3">
+              <label for="username" class="form-label">商品名</label>
+              <input type="text" class="form-control" id="username" v-model="this.singleProduct.name" placeholder="请输入商品名" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">商品介绍</label>
+              <input type="email" class="form-control" id="email" v-model="this.singleProduct.description" placeholder="请输入商品介绍" required>
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">价格</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.singleProduct.price" placeholder="请输入价格">
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">库存数量</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.singleProduct.stockQuantity" placeholder="请输入库存数量">
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">种类</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.singleProduct.categoryId" placeholder="请输入种类：1.休闲零食 2.家清日化 3.米面粮油">
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">图片URL</label>
+              <input type="tel" class="form-control" id="phone" v-model="this.singleProduct.picUrl" placeholder="请输入图片URL">
+            </div>
+            <a href="http://106.54.241.217:8080/">在这里上传图片</a>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary" @click="addOrSaveProduct()">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script>
-import * as bootstrap from 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js';
+
+import axios from "axios";
 
 export default {
   name: 'AdminDashboard',
   data() {
     return {
       activeSection: 'userList',
-      users: [
-        { id: 1, username: 'user1', email: 'user1@example.com' },
-        { id: 2, username: 'user2', email: 'user2@example.com' },
-      ],
-      products: [
-        { id: 1, name: '新鲜苹果', price: 5.99, stock: 100 },
-        { id: 2, name: '有机牛奶', price: 12.99, stock: 50 },
-      ],
+      users: [],
+      tempUserId:0,
+      changeUserInfo:{
+        userId:0,
+        username:'',
+        passworld:'',
+        email:'',
+        fullName:'',
+        phone:'',
+        address:''
+      },
+      changeProductInfo:{},
+      products: [],
+      singleProduct:{},
       adminProfile: {
         name: 'admin',
         email: 'admin@example.com'
@@ -222,25 +323,140 @@ export default {
     }
   },
   methods: {
+    setCurrentUserId(userId){
+      this.tempUserId = userId;
+      this.changeUserInfo=this.users[userId];
+      console.log(this.changeUserInfo)
+    },
+    getUserList(){
+      axios({
+        method:'GET',
+        url:'http://localhost:8080/admins/getAllUsers'
+      }).then(result=>{
+        this.users=result.data
+      })
+    },
+    getProduct(){
+      axios({
+        method:'GET',
+        url:'http://localhost:8080/products/getproducts',
+      }).then(result=>{
+        this.products = result.data
+        console.log(this.products)
+      })
+    },
     setActiveSection(section) {
+      console.log(section)
+      switch (section) {
+        case 'userList':{
+          this.getUserList()
+          break
+        }
+        case 'userRoles':{
+          break
+        }
+        case 'productList':{
+          this.getProduct()
+          break
+        }
+        case 'productCategories':{
+          break
+        }
+        case 'productInventory':{
+          break
+        }
+        case 'adminProfile':{
+          break
+        }
+        case 'adminPassword':{
+          break
+        }
+        case 'orderList':{
+          break
+        }
+        case 'orderStatus':{
+          break
+        }
+        default:{
+          alert('没有此功能')
+        }
+      }
       this.activeSection = section;
     },
     editUser(id) {
       alert(`编辑用户 ID: ${id}`);
     },
     deleteUser(id) {
-      this.users = this.users.filter(user => user.id !== id);
-      alert(`已删除用户 ID: ${id}`);
+      axios({
+        method:'delete',
+        url:'http://localhost:8080/admins/deleteUserById',
+        params:{
+          userId:id
+        }
+      }).then(result=>{
+        if(result.data.status===200){
+          alert(result.data.message)
+          setTimeout('location.reload()',3000)
+        }else {
+          alert(result.data.message)
+        }
+      })
+    },
+    addOrSaveProduct(){
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/products/addOrSaveProducts',
+        data:this.singleProducts
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          location.reload()
+        }else {
+          alert(result.data.message)
+        }
+      })
     },
     editProduct(id) {
-      alert(`编辑商品 ID: ${id}`);
+      axios({
+        method:'GET',
+        url:'http://localhost:8080/products/getSingleProducts',
+        params:{
+          productId:parseInt(id)
+        }
+      }).then(result=>{
+        this.singleProduct=result.data
+      })
     },
     deleteProduct(id) {
-      this.products = this.products.filter(product => product.id !== id);
-      alert(`已删除商品 ID: ${id}`);
+      axios({
+        method:'DELETE',
+        url:'http://localhost:8080/products/delectProduct',
+        params:{
+          productId:id
+        }
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          location.reload()
+        }else {
+          alert(result.data.message)
+        }
+      })
     },
     saveProfile() {
-      alert('个人资料已保存！');
+      console.log(this.changeUserInfo)
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/admins/changeUserInfo',
+        data:this.changeUserInfo
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          location.reload()
+        }else {
+          alert(result.data.message)
+        }
+      })
     },
     logout() {
       alert('已退出登录！');

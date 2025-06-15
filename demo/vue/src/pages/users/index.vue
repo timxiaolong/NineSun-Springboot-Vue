@@ -23,11 +23,9 @@
             <div v-if="this.userId != null" >
               <span style="margin-right: 5px">欢迎用户：{{this.username}}</span>
               <a href="/userinfo" class="btn btn-outline-info me-2">个人中心</a>
-<!--              <div class="position-relative">-->
                 <a class="btn btn-outline-primary" href="/cart">
                   购物车
                 </a>
-<!--              </div>-->
             </div>
             <div v-if="this.userId == null">
               <a href="/login" class="btn btn-outline-success me-2">登录</a>
@@ -72,41 +70,8 @@
             <img :src="product.image" class="card-img-top" alt="商品图片">
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5>
-              <p class="card-text">￥{{ product.price.toFixed(2) }}</p>
-              <button class="btn btn-primary w-100" @click="addToCart(product)">
-                加入购物车
-              </button>
+              <p class="card-text">￥{{ product.price }}</p>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 购物车模态框 -->
-    <div class="modal fade" id="cartModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">购物车</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <div v-if="cart.length === 0" class="text-center">
-              购物车为空
-            </div>
-            <ul class="list-group" v-else>
-              <li v-for="item in cart" :key="item.id" class="list-group-item d-flex justify-content-between align-items-center">
-                {{ item.name }} - ￥{{ item.price.toFixed(2) }}
-                <button class="btn btn-sm btn-danger" @click="removeFromCart(item.id)">移除</button>
-              </li>
-            </ul>
-            <div class="mt-3" v-if="cart.length">
-              总计: ￥{{ cartTotal.toFixed(2) }}
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-            <button type="button" class="btn btn-primary" @click="checkout" :disabled="!cart.length">结算</button>
           </div>
         </div>
       </div>

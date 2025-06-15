@@ -181,10 +181,6 @@ export default {
         alert(result.data.message)
       })
     },
-    goToCart() {
-      alert('跳转到购物车页面');
-      // 实际应用中可使用路由跳转
-    }
   },
   mounted() {
     // 初始化时显示所有商品
@@ -192,7 +188,7 @@ export default {
     this.userId=localStorage.getItem('userId')
     axios({
       method:'GET',
-      url:'http://localhost:8080/users/getproducts',
+      url:'http://localhost:8080/products/getproducts',
     }).then(result=>{
       this.products = result.data
     })

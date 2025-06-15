@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,15 +31,9 @@ public class Orders implements Serializable {
 
     private Integer userId;
 
-    private BigDecimal totalAmount;
-
     private String status;
-
-    private LocalDateTime createdAt;
 
     private String shippingAddress;
 
-    private String paymentMethod;
-
-
+    private LocalDateTime orderTime;
 }

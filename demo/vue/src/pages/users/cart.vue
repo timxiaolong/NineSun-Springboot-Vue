@@ -158,8 +158,23 @@ export default {
       })
     },
     checkout() {
-      alert(`感谢购买！总计: ￥${this.cartTotal.toFixed(2)}`);
-      this.cart = [];
+      // axios({
+      //   url:'http://localhost:8080/cart-items/checkout',
+      //   method:'POST',
+      //   data:this.cart,
+      //   param:{
+      //     userId:localStorage.getItem('userId')
+      //   }
+      // }).then(result=>{
+      //   alert(result.data.message)
+      //   setTimeout('location.reload()',3000)
+      // })
+      axios.post('http://localhost:8080/cart-items/checkout',JSON.stringify(this.cart),{
+        headers:{ 'Content-Type': 'application/json; charset=UTF-8' },
+        params:{userId:localStorage.getItem('userId')}
+      }).then(result=>{
+
+      })
     }
   },
   mounted() {

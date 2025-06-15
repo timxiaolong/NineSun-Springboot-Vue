@@ -168,7 +168,7 @@ export default {
             window.sessionStorage.setItem('userId',result.data.userId)
             window.sessionStorage.setItem('userName',result.data.username)
             alert(result.data.message)
-            // setTimeout("location.href=\"/admin\"",3000)
+            setTimeout("location.href=\"/admin\"",3000)
           }else {
             alert(result.data.message)
           }

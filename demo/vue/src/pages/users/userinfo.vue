@@ -22,6 +22,7 @@
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >
               <span style="margin-right: 5px">欢迎用户：{{this.username}}</span>
+              <a href="/userinfo" class="btn btn-outline-info me-2">个人中心</a>
               <a class="btn btn-outline-primary" href="/cart">
                 购物车
               </a>
@@ -43,10 +44,7 @@
           <div class="card p-4 shadow">
             <!-- 头像 -->
             <div class="text-center mb-4">
-              <img :src="user.avatar" alt="用户头像" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
-              <div class="mt-2">
-                <button class="btn btn-outline-primary btn-sm" @click="changeAvatar">更改头像</button>
-              </div>
+              <img src="http://106.54.241.217:8080/images/2025/06/13/PixPin_2025-06-14_10-13-44.md.png" alt="用户头像" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
             </div>
 
             <!-- 选项卡导航 -->
@@ -77,8 +75,15 @@
                   <label for="phone" class="form-label">电话</label>
                   <input type="tel" class="form-control" id="phone" v-model="user.phone">
                 </div>
+                <div class="mb-3">
+                  <label for="address" class="form-label">地址</label>
+                  <input type="tel" class="form-control" id="address" v-model="user.address">
+                </div>
                 <div class="text-center">
                   <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+                <div class="text-center">
+                  <button class="btn btn-primary" style="margin-top: 30px" @click="exit()">退出登录</button>
                 </div>
               </form>
             </div>
@@ -92,24 +97,74 @@
                 <thead>
                 <tr>
                   <th>订单编号</th>
-                  <th>日期</th>
-                  <th>总价</th>
+                  <th>收货地址</th>
                   <th>状态</th>
                   <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-for="order in orders" :key="order.id">
-                  <td>{{ order.id }}</td>
-                  <td>{{ order.date }}</td>
-                  <td>￥{{ order.total.toFixed(2) }}</td>
+                  <td>{{ order.orderId }}</td>
+                  <td>{{ order.shippingAddress }}</td>
                   <td>{{ order.status }}</td>
                   <td>
-                    <button class="btn btn-sm btn-primary" @click="viewOrderDetails(order.id)">查看详情</button>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orderModal" @click="getOrderItems(order.orderId)">查看详情</button>
                   </td>
                 </tr>
                 </tbody>
               </table>
+            </div>
+
+            <!--订单信息模态框-->
+            <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="orderModalLabel">订单详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <!-- 订单基本信息 -->
+                    <div class="mb-4">
+                      <h6 class="fw-bold">订单信息</h6>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <p class="mb-2"><strong>订单ID：</strong> {{ orderTitle.orderId }}</p>
+                          <p class="mb-2"><strong>下单时间：</strong> {{ orderTitle.orderTime }}</p>
+                        </div>
+                        <div class="col-md-6">
+                          <p class="mb-2"><strong>状态：</strong> <span class="badge bg-success">{{ orderTitle.status }}</span></p>
+                          <p class="mb-2"><strong>收货地址：</strong> {{ orderTitle.shippingAddress }}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 商品列表 -->
+                    <div>
+                      <h6 class="fw-bold mb-3">商品列表</h6>
+                      <div class="table-responsive">
+                        <div class="table table-hover">
+                          <div class="row bg-light py-2">
+                            <div class="col-3 fw-bold">商品名称</div>
+                            <div class="col-3 fw-bold">数量</div>
+                            <div class="col-3 fw-bold">单价</div>
+                            <div class="col-3 fw-bold">小计</div>
+                          </div>
+                          <div v-for="item in order_items" :key="item.orderItemsId" class="row py-2 border-bottom">
+                            <div class="col-3">{{ item.name }}</div>
+                            <div class="col-3">{{ item.quantity }}</div>
+                            <div class="col-3">¥{{ item.price }}</div>
+                            <div class="col-3">¥{{ (item.quantity * item.price) }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- 修改密码 -->
@@ -169,35 +224,55 @@
 </template>
 
 <script>
+import axios from "axios";
+import {compile} from "vue";
+
 export default {
   name: 'UserProfile',
   data() {
     return {
       activeTab: 'profile',
       user: {
-        avatar: 'https://via.placeholder.com/150?text=用户头像',
-        username: 'user123',
-        email: 'user123@example.com',
-        phone: '138-1234-5678'
+        userId:0,
+        username: '',
+        email: '',
+        phone: '',
+        fullName:'',
+        createAt:'',
+        lastLogin:'',
+        address:''
       },
+      username:'',
+      userId:'',
       passwordForm: {
         currentPassword: '',
         newPassword: '',
         confirmNewPassword: ''
       },
-      orders: [
-        { id: 'ORD001', date: '2025-06-01', total: 45.97, status: '已完成' },
-        { id: 'ORD002', date: '2025-05-28', total: 12.99, status: '待发货' }
-      ],
-      cartCount: 3, // 模拟购物车数量
+      orders: [],
+      orderTitle:{},
+      order_items:[],
       message: '',
       messageType: ''
     };
   },
   methods: {
-    changeAvatar() {
-      this.user.avatar = 'https://via.placeholder.com/150?text=新头像';
-      this.showMessage('头像已更新！', 'alert-success');
+    getOrderItems(orderId){
+      console.log(this.orders)
+      this.orderTitle = this.orders[orderId-1]
+      console.log(orderId)
+      console.log(this.orderTitle)
+      axios({
+        method:'GET',
+        url:'http://localhost:8080/order-items/getOrderItems',
+        params:{
+          orderId:orderId
+        }
+      }).then(result=>{
+        console.log(result.data)
+        this.order_items = result.data
+        console.log(this.order_items)
+      })
     },
     saveProfile() {
       if (!this.user.username || !this.isValidEmail(this.user.email)) {
@@ -208,7 +283,27 @@ export default {
         this.showMessage('请输入有效的手机号码！', 'alert-danger');
         return;
       }
-      this.showMessage('个人信息已保存！', 'alert-success');
+      console.log(this.user)
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/users/changeUserInfo',
+        data:this.user,
+        headers:{
+          'Content-Type':'application/json'
+        }
+      }).then(result=>{
+        if (result.data.status === 200){
+          this.showMessage(result.data.message, 'alert-success');
+          setTimeout(3000,location.reload())
+        }else {
+          this.showMessage(result.data.message, 'alert-error');
+        }
+      })
+    },
+    exit(){
+      localStorage.clear()
+      alert('退出登录，正在跳转主页')
+      setTimeout("location.href=\"/\"",3000)
     },
     changePassword() {
       if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword || !this.passwordForm.confirmNewPassword) {
@@ -219,16 +314,24 @@ export default {
         this.showMessage('新密码和确认密码不一致！', 'alert-danger');
         return;
       }
-      this.showMessage('密码已修改！', 'alert-success');
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/users/changeUserPassword',
+        params:{
+          newPassword:this.passwordForm.newPassword,
+          oldPassword:this.passwordForm.currentPassword,
+          userId:parseInt(localStorage.getItem('userId'))
+        }
+      }).then(result=>{
+        if (result.data.status === 200){
+          alert(result.data.message)
+          localStorage.clear()
+          setTimeout('this.$route.push(\'/\')',3000)
+        }else {
+          this.showMessage(result.data.message,'alert-danger')
+        }
+      })
       this.passwordForm = { currentPassword: '', newPassword: '', confirmNewPassword: '' };
-    },
-    viewOrderDetails(orderId) {
-      alert(`查看订单 ${orderId} 详情`);
-      // 实际应用中可跳转到订单详情页面
-    },
-    goToCart() {
-      alert('跳转到购物车页面');
-      // 实际应用中可使用路由跳转
     },
     showMessage(text, type) {
       this.message = text;
@@ -241,6 +344,32 @@ export default {
     isValidPhone(phone) {
       return /^1[3-9]\d{9}$/.test(phone);
     }
+  },
+  mounted() {
+    this.username=localStorage.getItem('username')
+    this.userId=localStorage.getItem('userId')
+    //获取用户信息
+    axios({
+      method:'get',
+      url:'http://localhost:8080/users/getUserInfo',
+      params:{
+        id:parseInt(this.userId)
+      }
+    }).then(result=>{
+      this.user = result.data
+      console.log(result.data)
+      console.log(this.user)
+    })
+    //获取订单信息
+    axios({
+      method:'GET',
+      url:'http://localhost:8080/orders/getUserOrders',
+      params:{
+        userId:parseInt(localStorage.getItem('userId'))
+      }
+    }).then(result=>{
+      this.orders = result.data
+    })
   }
 };
 </script>
