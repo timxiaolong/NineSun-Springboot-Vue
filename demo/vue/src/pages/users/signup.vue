@@ -15,17 +15,11 @@
             <li class="nav-item">
               <a class="nav-link" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
-            <a href="#login" class="btn btn-outline-success me-2">登录</a>
-            <div class="position-relative">
-              <a class="btn btn-outline-primary" href="/cart">
-                购物车
-              </a>
-            </div>
+            <a href="/login" class="btn btn-outline-success me-2">登录</a>
+            <a href="/signup" class="btn btn-outline-success me-2">注册</a>
+
           </div>
         </div>
       </div>
@@ -48,6 +42,17 @@
             >
           </div>
           <div class="mb-3">
+            <label for="fullName" class="form-label">昵称</label>
+            <input
+                type="text"
+                class="form-control"
+                id="fullName"
+                v-model="form.fullName"
+                placeholder="请输入昵称"
+                required
+            >
+          </div>
+          <div class="mb-3">
             <label for="password" class="form-label">密码</label>
             <input
                 type="password"
@@ -64,7 +69,7 @@
                 type="password"
                 class="form-control"
                 id="confirmPassword"
-                v-model="form.confirmPassword"
+                v-model="this.confirmPassword"
                 placeholder="请再次输入密码"
                 required
             >
@@ -90,7 +95,17 @@
                 placeholder="请输入手机号码"
             >
           </div>
-          <button type="submit" class="btn btn-primary w-100">注册</button>
+          <div class="mb-3">
+            <label for="address" class="form-label">收货地址</label>
+            <input
+                type="text"
+                class="form-control"
+                id="address"
+                v-model="form.address"
+                placeholder="请输入收货地址"
+            >
+          </div>
+          <button type="submit" class="btn btn-primary w-100" @click="signup()">注册</button>
         </form>
         <div v-if="errorMessage" class="alert alert-danger mt-3" role="alert">
           {{ errorMessage }}
@@ -128,6 +143,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: 'Register',
   data() {
@@ -135,10 +152,13 @@ export default {
       form: {
         username: '',
         password: '',
-        confirmPassword: '',
+        fullName:'',
         email: '',
-        phone: ''
+        phone: '',
+        address:'',
+        createdAt:'',
       },
+      confirmPassword: '',
       cartCount: 0, // 模拟购物车数量
       errorMessage: '',
       successMessage: ''
@@ -151,12 +171,12 @@ export default {
       this.successMessage = '';
 
       // 验证输入
-      if (!this.form.username || !this.form.password || !this.form.confirmPassword || !this.form.email) {
+      if (!this.form.username || !this.form.password || !this.confirmPassword || !this.form.email) {
         this.errorMessage = '请填写所有必填字段！';
         return;
       }
 
-      if (this.form.password !== this.form.confirmPassword) {
+      if (this.form.password !== this.confirmPassword) {
         this.errorMessage = '两次输入的密码不一致！';
         return;
       }
@@ -170,15 +190,19 @@ export default {
         this.errorMessage = '请输入有效的手机号码！';
         return;
       }
-
-      // 模拟注册成功
-      this.successMessage = '注册成功！请登录。';
-      this.form = { username: '', password: '', confirmPassword: '', email: '', phone: '' };
-      setTimeout(() => {
-        this.successMessage = '';
-        // 实际应用中可跳转到登录页面
-        alert('跳转到登录页面');
-      }, 2000);
+      axios({
+        method:'post',
+        url:'http://localhost:8080/users/signup',
+        data:this.form
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          location.href='/login'
+        }else {
+          alert(result.data.message)
+          this.form=[]
+        }
+      })
     },
     isValidEmail(email) {
       // 简单邮箱格式验证

@@ -39,8 +39,6 @@ public class Users implements Serializable {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime lastLogin;
-
     private String address;
 
 

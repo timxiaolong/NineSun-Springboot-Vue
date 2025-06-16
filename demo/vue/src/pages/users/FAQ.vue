@@ -15,9 +15,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >

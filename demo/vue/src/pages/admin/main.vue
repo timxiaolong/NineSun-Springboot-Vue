@@ -34,7 +34,6 @@
             <div id="userMenu" class="accordion-collapse collapse">
               <div class="accordion-body">
                 <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('userList')">用户列表</a>
-                <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('userRoles')">角色管理</a>
               </div>
             </div>
           </div>
@@ -49,7 +48,6 @@
               <div class="accordion-body">
                 <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('productList')">商品列表</a>
                 <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('productCategories')">分类管理</a>
-                <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('productInventory')">库存管理</a>
               </div>
             </div>
           </div>
@@ -77,7 +75,6 @@
             <div id="orderMenu" class="accordion-collapse collapse">
               <div class="accordion-body">
                 <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('orderList')">订单列表</a>
-                <a href="#" class="d-block mb-2 text-decoration-none" @click.prevent="setActiveSection('orderStatus')">状态跟踪</a>
               </div>
             </div>
           </div>
@@ -150,7 +147,6 @@
 
         <div v-if="activeSection === 'productCategories'">
           <h3>种类列表</h3>
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productProfileModal">新增商品</button>
           <table class="table table-striped">
             <thead>
             <tr>
@@ -164,7 +160,6 @@
               <td>{{ category.categoryId }}</td>
               <td>{{ category.name }}</td>
               <td>
-                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#categoryProfileModal" @click="editProduct(category.categoryId)">编辑</button>
                 <button class="btn btn-sm btn-danger" @click="deleteCategory(category.categoryId)">删除</button>
               </td>
             </tr>
@@ -177,23 +172,33 @@
           <form>
             <div class="mb-3">
               <label for="adminName" class="form-label">用户名</label>
-              <input type="text" class="form-control" id="adminName" v-model="adminProfile.name" disabled>
+              <input type="text" class="form-control" id="adminName" v-model="this.adminProfile.username" disabled>
             </div>
             <div class="mb-3">
-              <label for="adminEmail" class="form-label">邮箱</label>
-              <input type="email" class="form-control" id="adminEmail" v-model="adminProfile.email">
+              <label for="adminEmail" class="form-label">手机号</label>
+              <input type="email" class="form-control" id="adminEmail" v-model="this.adminProfile.phone">
             </div>
-            <button type="button" class="btn btn-primary" @click="saveProfile">保存</button>
+            <button type="button" class="btn btn-primary" @click="saveAdminProfile()">保存</button>
           </form>
         </div>
         <!-- 其他功能占位 -->
-        <div v-if="activeSection === 'userRoles'">
-          <h3>角色管理</h3>
-          <p>此处为角色管理功能（待实现）。</p>
-        </div>
         <div v-if="activeSection === 'adminPassword'">
           <h3>修改密码</h3>
-          <p>此处为修改密码功能（待实现）。</p>
+          <form>
+            <div class="mb-3">
+              <label for="oldPassword" class="form-label">旧密码</label>
+              <input type="text" class="form-control" id="oldPassword" v-model="this.password.oldPassword">
+            </div>
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">新密码</label>
+              <input type="email" class="form-control" id="newPassword" v-model="this.password.newPassword">
+            </div>
+            <div class="mb-3">
+              <label for="rePassword" class="form-label">再输入一次</label>
+              <input type="email" class="form-control" id="rePassword" v-model="this.password.rePassword">
+            </div>
+            <button type="button" class="btn btn-primary" @click="savePasswordProfile()">保存</button>
+          </form>
         </div>
         <div v-if="activeSection === 'orderList'">
           <h3>订单列表</h3>
@@ -202,33 +207,25 @@
             <tr>
               <th>订单ID</th>
               <th>用户ID</th>
-              <th>总价</th>
               <th>状态</th>
               <th>下单时间</th>
               <th>邮寄地址</th>
-              <th>支付方式</th>
             </tr>
             </thead>
             <tbody>
             <tr v-for="order in orders" :key="order.id">
               <td>{{ order.orderId }}</td>
               <td>{{ order.userId }}</td>
-              <td>{{ order.totalAmount }}</td>
               <td>{{ order.status }}</td>
-              <td>{{ order.createdAt }}</td>
+              <td>{{ order.orderTime }}</td>
               <td>{{ order.shippingAddress }}</td>
-              <td>{{ order.paymentMethod }}</td>
               <td>
-                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#orderProfileModal" @click="editProduct(category.categoryId)">编辑</button>
+                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#orderModal" @click="getOrderItems(order.orderId)">查看详情</button>
                 <button class="btn btn-sm btn-danger" @click="deleteOrder(order.orderId)">删除</button>
               </td>
             </tr>
             </tbody>
           </table>
-        </div>
-        <div v-if="activeSection === 'orderStatus'">
-          <h3>状态跟踪</h3>
-          <p>此处为订单状态跟踪功能（待实现）。</p>
         </div>
       </div>
     </div>
@@ -318,6 +315,67 @@
     </div>
   </div>
 
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderModalLabel">订单详情</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- 订单基本信息 -->
+          <div class="mb-4">
+            <h6 class="fw-bold">订单信息</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-2"><strong>订单ID：</strong> {{ orderTitle.orderId }}</p>
+                <p class="mb-2"><strong>下单时间：</strong> {{ orderTitle.orderTime }}</p>
+              </div>
+              <div class="col-md-6">
+<!--                <p class="mb-2"><strong>状态：</strong> <span class="badge bg-success">{{ orderTitle.status }}</span></p>-->
+                <p class="mb-2 d-flex align-items-center">
+                  <strong class="me-2">状态：</strong>
+                  <select v-model="this.newStatus" class="form-select w-auto d-inline-block">
+                    <option value="已下单">已下单</option>
+                    <option value="正在配送">正在配送</option>
+                    <option value="已完成">已完成</option>
+                    <option value="已取消">已取消</option>
+                  </select>
+                  <button @click="saveStatus(this.newStatus)" class="btn btn-primary btn-sm ms-2">保存状态</button>
+                </p>
+                <p class="mb-2"><strong>收货地址：</strong> {{ orderTitle.shippingAddress }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 商品列表 -->
+          <div>
+            <h6 class="fw-bold mb-3">商品列表</h6>
+            <div class="table-responsive">
+              <div class="table table-hover">
+                <div class="row bg-light py-2">
+                  <div class="col-3 fw-bold">商品名称</div>
+                  <div class="col-3 fw-bold">数量</div>
+                  <div class="col-3 fw-bold">单价</div>
+                  <div class="col-3 fw-bold">小计</div>
+                </div>
+                <div v-for="item in orderItems" :key="item.orderItemsId" class="row py-2 border-bottom">
+                  <div class="col-3">{{ item.name }}</div>
+                  <div class="col-3">{{ item.quantity }}</div>
+                  <div class="col-3">¥{{ item.price }}</div>
+                  <div class="col-3">¥{{ (item.quantity * item.price) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between align-items-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -340,34 +398,57 @@ export default {
         phone:'',
         address:''
       },
+      newStatus:'',
       changeProductInfo:{},
       products: [],
       categories:[],
       orders:[],
+      orderItems:[],
+      orderTitle:{
+        orderId:0,
+        orderTime:'',
+        status:'',
+        shippingAddress:''
+      },
       singleProduct:{},
-      adminProfile: {
-        name: 'admin',
-        email: 'admin@example.com'
-      }
+      password:{
+        oldPassword:'',
+        newPassword:'',
+        rePassword:''
+      },
+      adminProfile: {}
     };
   },
   computed: {
     activeSectionTitle() {
       const titles = {
         userList: '用户列表',
-        userRoles: '角色管理',
         productList: '商品列表',
         productCategories: '分类管理',
         productInventory: '库存管理',
         adminProfile: '个人资料',
         adminPassword: '修改密码',
         orderList: '订单列表',
-        orderStatus: '状态跟踪'
       };
       return titles[this.activeSection] || '管理面板';
     }
   },
   methods: {
+    saveStatus(status){
+      this.orderTitle.status=status
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/orders/saveOrUpdateOrders',
+        data:this.orderTitle
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          location.reload()
+        }else {
+          alert(result.data.message)
+        }
+      })
+    },
     setCurrentUserId(userId){
       this.tempUserId = userId;
       this.changeUserInfo=this.users[userId];
@@ -398,12 +479,38 @@ export default {
         this.categories=result.data
       })
     },
+    getOrderItems(orderId){
+      axios({
+        url:'http://localhost:8080/order-items/getOrderItems',
+        method:"GET",
+        params:{
+          orderId:orderId
+        }
+      }).then(result=>{
+        this.orderItems=result.data
+      })
+      this.orderTitle=this.orders.find(order => order.orderId === orderId)
+      this.newStatus=this.orderTitle.status
+    },
     getOrders(){
       axios({
         method:'GET',
         url:'http://localhost:8080/orders/getAllOrders'
       }).then(result=>{
         this.orders = result.data
+        console.log(this.orders)
+      })
+    },
+    getAdmin(){
+      axios({
+        method:'get',
+        url:'http://localhost:8080/admins/getAdminInfo',
+        params:{
+          adminId:1
+        }
+      }).then(result=>{
+        console.log(result)
+        this.adminProfile=result.data
       })
     },
     setActiveSection(section) {
@@ -428,12 +535,14 @@ export default {
           break
         }
         case 'adminProfile':{
+          this.getAdmin()
           break
         }
         case 'adminPassword':{
           break
         }
         case 'orderList':{
+          this.getOrders()
           break
         }
         case 'orderStatus':{
@@ -458,21 +567,57 @@ export default {
       }).then(result=>{
         if(result.data.status===200){
           alert(result.data.message)
-          setTimeout('location.reload()',3000)
+          location.reload()
         }else {
           alert(result.data.message)
         }
       })
     },
     addOrSaveProduct(){
+      console.log(this.singleProduct)
       axios({
         method:'POST',
-        url:'http://localhost:8080/products/addOrSaveProducts',
-        data:this.singleProducts
+        url:'http://localhost:8080/products/addOrSaveProduct',
+        data:this.singleProduct
       }).then(result=>{
         if (result.data.status===200){
           alert(result.data.message)
           location.reload()
+        }else {
+          alert(result.data.message)
+        }
+      })
+    },
+    saveAdminProfile(){
+      console.log(this.adminProfile)
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/admins/saveAdminInfo',
+        data:this.adminProfile
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          location.reload()
+        }else {
+          alert(result.data.message)
+        }
+      })
+    },
+    savePasswordProfile(){
+      axios({
+        method:'POST',
+        url:'http://localhost:8080/admins/changePassword',
+        params:{
+          adminId:1,
+          oldPassword:this.password.oldPassword,
+          newPassword:this.password.newPassword,
+          rePassword:this.password.rePassword,
+        }
+      }).then(result=>{
+        if (result.data.status===200){
+          alert(result.data.message)
+          this.password={}
+          location.href='/login'
         }else {
           alert(result.data.message)
         }
@@ -522,8 +667,12 @@ export default {
     },
     logout() {
       alert('已退出登录！');
-      // 实际应用中可跳转到登录页面
+      localStorage.clear()
+      location.href='/'
     }
+  },
+  mounted() {
+
   }
 };
 </script>

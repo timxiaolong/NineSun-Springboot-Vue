@@ -2,6 +2,8 @@ package com.springboot.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.springboot.entity.Message;
+import com.springboot.entity.OrderItems;
 import com.springboot.entity.Orders;
 import com.springboot.mapper.OrdersMapper;
 import com.springboot.service.OrdersService;
@@ -35,6 +37,18 @@ public class OrdersController {
         return list;
     }
 
-    @GetMapping
+    @GetMapping("/getAllOrders")
+    public List<Orders> getAllOrders() {
+        return ordersMapper.selectList(null);
+    }
+
+    @PostMapping("/saveOrUpdateOrders")
+    public Message saveOrUpdateOrders(@RequestBody Orders orders){
+        if (ordersService.saveOrUpdate(orders)){
+            return new Message("更新成功", 200, null);
+        }else  {
+            return new Message("更新失败", 200, null);
+        }
+    }
 
 }

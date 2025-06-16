@@ -15,9 +15,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >
@@ -71,6 +68,7 @@
             <div class="card-body">
               <h5 class="card-title">{{ product.name }}</h5>
               <p class="card-text">￥{{ product.price }}</p>
+              <p class="card-text" style="color: red">{{product.ad}}</p>
             </div>
           </div>
         </div>
@@ -110,39 +108,20 @@ export default {
   data() {
     return {
       products: [
-        { id: 1, name: '加厚垃圾袋', price: 5.99, image: 'http://106.54.241.217:8080/images/2025/06/10/efae3841782a3d4ff86f109b85a9f280.png' },
-        { id: 2, name: '大魔王素毛肚', price: 12.99, image: 'http://106.54.241.217:8080/images/2025/06/10/0b92a58f20517d177e3abeae6f5aaf11.png' },
-        { id: 3, name: '全麦面包', price: 8.50, image: 'https://via.placeholder.com/150' },
-        { id: 4, name: '优质牛肉', price: 29.99, image: 'https://via.placeholder.com/150' },
+        { id: 1, name: '加厚垃圾袋', price: 5.2, image: 'http://106.54.241.217:8080/images/2025/06/10/efae3841782a3d4ff86f109b85a9f280.png',ad:'销量No.1' },
+        { id: 2, name: '大魔王素毛肚', price: 28.8, image: 'http://106.54.241.217:8080/images/2025/06/10/0b92a58f20517d177e3abeae6f5aaf11.png',ad:'大外学子最爱' },
+        { id: 3, name: '喜之郎棒冰', price: 7.6, image: 'http://106.54.241.217:8080/images/2025/06/10/964469845ac303ef40e4f0ef23db9c81.png',ad:'童年的味道' },
+        { id: 4, name: '维达手纸', price: 34, image: 'http://106.54.241.217:8080/images/2025/06/10/98c3c0a26fa292acfd5831fd3c9ed58f.png',ad:'就问谁不需要？' },
       ],
       username:'',
       userId:'',
-      cart: [
-
-      ]
     };
   },
   computed: {
-    cartTotal() {
-      return this.cart.reduce((total, item) => total + item.price, 0);
-    }
+
   },
   methods: {
-    addToCart(product) {
-      this.cart.push(product);
-      alert(`${product.name} 已加入购物车！`);
-    },
-    removeFromCart(productId) {
-      this.cart = this.cart.filter(item => item.id !== productId);
-    },
-    showCart() {
-      const modal = new bootstrap.Modal(document.getElementById('cartModal'));
-      modal.show();
-    },
-    checkout() {
-      alert('感谢购买！共计: ￥' + this.cartTotal.toFixed(2));
-      this.cart = [];
-    }
+
   },
   mounted() {
     this.username=localStorage.getItem('username')

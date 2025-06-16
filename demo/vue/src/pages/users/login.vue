@@ -14,18 +14,11 @@
           <li class="nav-item">
             <a class="nav-link" href="/types">分类</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">促销</a>
-          </li>
         </ul>
         <div class="d-flex align-items-center">
-          <a href="#login" class="btn btn-outline-success me-2">登录</a>
-          <div class="position-relative">
-            <button class="btn btn-outline-primary" @click="goToCart">
-              购物车
-              <span class="badge bg-danger cart-badge" v-if="cartCount">{{ cartCount }}</span>
-            </button>
-          </div>
+          <a href="/login" class="btn btn-outline-success me-2">登录</a>
+          <a href="/signup" class="btn btn-outline-success me-2">注册</a>
+
         </div>
       </div>
     </div>
@@ -148,7 +141,7 @@ export default {
             localStorage.setItem('userId',result.data.param.userId)
             console.log(sessionStorage.getItem('userId'))
             alert(result.data.message)
-            // setTimeout("location.href=\"/\"",3000)
+            location.href='/'
           }else {
             alert(result.data.message)
           }
@@ -168,7 +161,7 @@ export default {
             window.sessionStorage.setItem('userId',result.data.userId)
             window.sessionStorage.setItem('userName',result.data.username)
             alert(result.data.message)
-            setTimeout("location.href=\"/admin\"",3000)
+            location.href="/admin"
           }else {
             alert(result.data.message)
           }
@@ -185,7 +178,6 @@ export default {
 
 <style scoped>
 .background {
-  background-image: url('');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

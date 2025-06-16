@@ -58,6 +58,17 @@ public class CartItemsController {
         }
     }
 
+    @DeleteMapping("/deleteAllCart")
+    public Message deleteAllCart(@RequestParam Integer userId){
+        LambdaQueryWrapper<CartItems> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CartItems::getUserId,userId);
+        if (cartItemsService.remove(queryWrapper)){
+            return new Message("删除成功",200,null);
+        }else  {
+            return new Message("删除失败",400,null);
+        }
+    }
+
     @PutMapping("/addToCart")
     public Message addToCart(@RequestParam Integer userId, @RequestParam Integer productId) {
         CartItems cartItems = new CartItems();
@@ -78,7 +89,7 @@ public class CartItemsController {
         //先存入一个订单，获取到订单号
         Orders orders = new Orders();
         orders.setUserId(userId);
-        orders.setStatus("0");
+        orders.setStatus("已下单");
         orders.setOrderTime(LocalDateTime.now());
         Users users = usersService.getById(userId);
         orders.setShippingAddress(users.getAddress());

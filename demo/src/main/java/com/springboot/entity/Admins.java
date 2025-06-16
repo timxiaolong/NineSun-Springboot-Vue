@@ -33,5 +33,7 @@ public class Admins implements Serializable {
 
     private LocalDateTime lastLogin;
 
+    private String phone;
+
 
 }

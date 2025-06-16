@@ -78,4 +78,35 @@ public class AdminsController {
             return new Message("更改失败", 400, null);
         }
     }
+
+    @GetMapping("/getAdminInfo")
+    public Admins getAdminInfo(@RequestParam Integer adminId){
+        return adminsService.getById(adminId);
+    }
+
+    @PostMapping("/saveAdminInfo")
+    public Message saveAdminInfo(@RequestBody Admins admins){
+        if (adminsService.updateById(admins)){
+            return new Message("修改成功", 200, null);
+        }else  {
+            return new Message("修改失败", 400, null);
+        }
+    }
+
+    @PostMapping("/changePassword")
+    public Message changePassword(@RequestParam Integer adminId,@RequestParam String oldPassword, @RequestParam String newPassword, @RequestParam String rePassword){
+        if (!newPassword.equals(rePassword)){
+            return new Message("两次密码输入错误", 400, null);
+        }
+        LambdaQueryWrapper<Admins> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Admins::getAdminId,adminId);
+        Admins admins = adminsService.getOne(lambdaQueryWrapper);
+        if (!admins.getPassword().equals(oldPassword)){
+            return new Message("旧密码输入错误，请重试", 400, null);
+        }else {
+            admins.setPassword(newPassword);
+            adminsService.updateById(admins);
+            return new Message("修改成功，正在返回登录界面", 200, null);
+        }
+    }
 }

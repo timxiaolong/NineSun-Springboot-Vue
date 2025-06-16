@@ -15,9 +15,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >
@@ -259,7 +256,7 @@ export default {
   methods: {
     getOrderItems(orderId){
       console.log(this.orders)
-      this.orderTitle = this.orders[orderId-1]
+      this.orderTitle = this.orders.find(order => order.orderId === orderId)
       console.log(orderId)
       console.log(this.orderTitle)
       axios({
@@ -293,17 +290,17 @@ export default {
         }
       }).then(result=>{
         if (result.data.status === 200){
-          this.showMessage(result.data.message, 'alert-success');
-          setTimeout(3000,location.reload())
+          alert(result.data.message)
+          location.reload()
         }else {
-          this.showMessage(result.data.message, 'alert-error');
+          alert(result.data.message)
         }
       })
     },
     exit(){
       localStorage.clear()
       alert('退出登录，正在跳转主页')
-      setTimeout("location.href=\"/\"",3000)
+      location.href="/"
     },
     changePassword() {
       if (!this.passwordForm.currentPassword || !this.passwordForm.newPassword || !this.passwordForm.confirmNewPassword) {

@@ -15,9 +15,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >
@@ -81,7 +78,7 @@
         <!-- 总价和结算 -->
         <div class="d-flex justify-content-end align-items-center">
           <h4 class="me-3">总计: ￥{{ cartTotal }}</h4>
-          <button class="btn btn-primary" @click="checkout">结算</button>
+          <button class="btn btn-primary" @click="checkout()">结算</button>
         </div>
       </div>
     </div>
@@ -119,8 +116,7 @@ export default {
   name: 'Cart',
   data() {
     return {
-      cart: [
-       ],
+      cart: [],
       username:'',
       userId:''
     };
@@ -157,23 +153,26 @@ export default {
         }
       })
     },
+    removeAllCart(){
+      axios({
+        method:'DELETE',
+        url:'http://localhost:8080/cart-items/deleteAllCart',
+        params:{
+          userId:localStorage.getItem('userId')
+        }
+      }).then(result=>{
+        alert(result.data.message)
+        if (result.data.status === 200){
+          location.reload()
+        }
+      })
+    },
     checkout() {
-      // axios({
-      //   url:'http://localhost:8080/cart-items/checkout',
-      //   method:'POST',
-      //   data:this.cart,
-      //   param:{
-      //     userId:localStorage.getItem('userId')
-      //   }
-      // }).then(result=>{
-      //   alert(result.data.message)
-      //   setTimeout('location.reload()',3000)
-      // })
-      axios.post('http://localhost:8080/cart-items/checkout',JSON.stringify(this.cart),{
-        headers:{ 'Content-Type': 'application/json; charset=UTF-8' },
+      axios.post('http://localhost:8080/cart-items/checkout',this.cart,{
         params:{userId:localStorage.getItem('userId')}
       }).then(result=>{
-
+        alert('添加成功')
+        this.removeAllCart()
       })
     }
   },

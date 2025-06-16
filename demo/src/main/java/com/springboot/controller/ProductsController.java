@@ -41,6 +41,7 @@ public class ProductsController {
 
     @PostMapping("/addOrSaveProduct")
     public Message addProduct(@RequestBody Products products){
+        System.out.println(products);
         if (productsService.saveOrUpdate(products)){
             return new Message("保存成功", 200, null);
         }else  {

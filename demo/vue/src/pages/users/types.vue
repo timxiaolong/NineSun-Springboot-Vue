@@ -15,9 +15,6 @@
             <li class="nav-item">
               <a class="nav-link active" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >
@@ -168,6 +165,10 @@ export default {
       this.filterProducts();
     },
     addToCart(productId) {
+      if (localStorage.getItem('userId')==null){
+        alert("请先登录")
+        return
+      }
       axios({
         method:'PUT',
         url:'http://localhost:8080/cart-items/addToCart',
@@ -191,8 +192,9 @@ export default {
       url:'http://localhost:8080/products/getproducts',
     }).then(result=>{
       this.products = result.data
+      this.filteredProducts = [...this.products];
     })
-    this.filteredProducts = [...this.products];
+    this.filterByCategory('全部')
   }
 };
 </script>

@@ -37,5 +37,7 @@ public class OrderItems implements Serializable {
 
     private Integer orderId;
 
+    private String shippingAddress;
+
 
 }

@@ -15,9 +15,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/types">分类</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">促销</a>
-            </li>
           </ul>
           <div class="d-flex align-items-center">
             <div v-if="this.userId != null" >
@@ -70,14 +67,6 @@
       <!-- 用户评价 -->
       <div class="mt-5">
         <h4>用户评价</h4>
-<!--        <div class="mb-3">-->
-<!--          <span>平均评分: </span>-->
-<!--          <span v-for="n in 5" :key="n" class="text-warning">-->
-<!--            <i class="bi bi-star-fill" v-if="n <= product.rating"></i>-->
-<!--            <i class="bi bi-star" v-else></i>-->
-<!--          </span>-->
-<!--          <span class="ms-2">({{ product.rating.toFixed(1) }})</span>-->
-<!--        </div>-->
         <div class="card">
           <div class="card-body">
             <div v-for="review in reviews" :key="review.id" class="border-bottom pb-3 mb-3">
@@ -169,15 +158,15 @@ export default {
       }
     },
     addToCart() {
+      if (localStorage.getItem('userId')==null){
+        alert("请先登录")
+        return
+      }
       this.addMessage = `${this.product.name} x${this.quantity} 已加入购物车！`;
       this.cartCount += this.quantity;
       this.quantity = 1;
       setTimeout(() => { this.addMessage = ''; }, 3000);
     },
-    goToCart() {
-      alert('跳转到购物车页面');
-      // 实际应用中可使用路由跳转
-    }
   },
   mounted() {
     this.username=localStorage.getItem('username')

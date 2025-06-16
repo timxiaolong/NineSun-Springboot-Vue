@@ -51,6 +51,17 @@ public class UsersController {
         }
     }
 
+    @PostMapping("/signup")
+    public Message signup(@RequestBody Users users){
+        try {
+            if(usersService.save(users))
+                return new Message("注册成功，正在返回登录页面",200,users);
+            else  return new Message("注册失败，请重试",400,null);
+        }catch (Exception e){
+            return new Message("注册失败，请重试",400,null);
+        }
+    }
+
     @GetMapping("/getUserInfo")
     public Users getUserInfo(@RequestParam Integer id){
         LambdaQueryWrapper<Users> lambdaQueryWrapper = new LambdaQueryWrapper<>();
