@@ -147,6 +147,30 @@
             </tbody>
           </table>
         </div>
+
+        <div v-if="activeSection === 'productCategories'">
+          <h3>种类列表</h3>
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productProfileModal">新增商品</button>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>ID</th>
+              <th>种类</th>
+              <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="category in categories" :key="category.id">
+              <td>{{ category.categoryId }}</td>
+              <td>{{ category.name }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#categoryProfileModal" @click="editProduct(category.categoryId)">编辑</button>
+                <button class="btn btn-sm btn-danger" @click="deleteCategory(category.categoryId)">删除</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
         <!-- 个人资料 -->
         <div v-if="activeSection === 'adminProfile'">
           <h3>个人资料</h3>
@@ -167,21 +191,40 @@
           <h3>角色管理</h3>
           <p>此处为角色管理功能（待实现）。</p>
         </div>
-        <div v-if="activeSection === 'productCategories'">
-          <h3>分类管理</h3>
-          <p>此处为分类管理功能（待实现）。</p>
-        </div>
-        <div v-if="activeSection === 'productInventory'">
-          <h3>库存管理</h3>
-          <p>此处为库存管理功能（待实现）。</p>
-        </div>
         <div v-if="activeSection === 'adminPassword'">
           <h3>修改密码</h3>
           <p>此处为修改密码功能（待实现）。</p>
         </div>
         <div v-if="activeSection === 'orderList'">
           <h3>订单列表</h3>
-          <p>此处为订单列表功能（待实现）。</p>
+          <table class="table table-striped">
+            <thead>
+            <tr>
+              <th>订单ID</th>
+              <th>用户ID</th>
+              <th>总价</th>
+              <th>状态</th>
+              <th>下单时间</th>
+              <th>邮寄地址</th>
+              <th>支付方式</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="order in orders" :key="order.id">
+              <td>{{ order.orderId }}</td>
+              <td>{{ order.userId }}</td>
+              <td>{{ order.totalAmount }}</td>
+              <td>{{ order.status }}</td>
+              <td>{{ order.createdAt }}</td>
+              <td>{{ order.shippingAddress }}</td>
+              <td>{{ order.paymentMethod }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#orderProfileModal" @click="editProduct(category.categoryId)">编辑</button>
+                <button class="btn btn-sm btn-danger" @click="deleteOrder(order.orderId)">删除</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
         <div v-if="activeSection === 'orderStatus'">
           <h3>状态跟踪</h3>
@@ -291,7 +334,7 @@ export default {
       changeUserInfo:{
         userId:0,
         username:'',
-        passworld:'',
+        password:'',
         email:'',
         fullName:'',
         phone:'',
@@ -299,6 +342,8 @@ export default {
       },
       changeProductInfo:{},
       products: [],
+      categories:[],
+      orders:[],
       singleProduct:{},
       adminProfile: {
         name: 'admin',
@@ -345,6 +390,22 @@ export default {
         console.log(this.products)
       })
     },
+    getCategories(){
+      axios({
+        method:'get',
+        url:'http://localhost:8080/categories/getAllCategories',
+      }).then(result=>{
+        this.categories=result.data
+      })
+    },
+    getOrders(){
+      axios({
+        method:'GET',
+        url:'http://localhost:8080/orders/getAllOrders'
+      }).then(result=>{
+        this.orders = result.data
+      })
+    },
     setActiveSection(section) {
       console.log(section)
       switch (section) {
@@ -360,6 +421,7 @@ export default {
           break
         }
         case 'productCategories':{
+          this.getCategories()
           break
         }
         case 'productInventory':{
